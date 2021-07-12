@@ -1,2 +1,4 @@
 .mypy_cache
 venv
+.env
+db.sqlite3
