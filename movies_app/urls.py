@@ -9,8 +9,8 @@ urlpatterns = [
     path('add-actor/', views.add_actors, name="Add actor"),
     path('manage-actor/', views.manage_actors, name="Manage actors"),
     path('actor-details/', views.actor_details, name="Actor details"),
-    path('directors/', views.get_directors, name="Actor details"),
-    path('add-director/', views.add_director, name="Actor details"),
-    path('manage-director/', views.manage_directors, name="Actor details"),
-    path('director-details/', views.director_details, name="Actor details"),
+    path('directors/', views.get_directors, name="Get directors"),
+    path('add-director/', views.add_director, name="Add director"),
+    path('manage-director/', views.manage_directors, name="Manage directors"),
+    path('director-details/', views.director_details, name="Director details"),
 ]

@@ -75,7 +75,10 @@ def manage_actors(request):
 def actor_details(request):
     actor = Actor.objects.get(id=request.data['id'])
     movies = [str(x) for x in Movie.objects.filter(actors=actor)]
-    return Response(movies, status=200)
+    return Response({
+        "actor_info": ActorSerializer(actor).data,
+        "movies": movies
+    }, status=200)
 
 
 ##### DIRECTORS #####
@@ -115,4 +118,7 @@ def manage_directors(request):
 def director_details(request):
     director = Director.objects.get(id=request.data['id'])
     movies = [str(x) for x in Movie.objects.filter(director=director)]
-    return Response(movies, status=200)
+    return Response({
+        "director_info": DirectorSerializer(director).data,
+        "movies": movies
+    }, status=200)
