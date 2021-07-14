@@ -1,5 +1,7 @@
+from django.contrib.auth.models import User
+from django.db.models import fields
 from rest_framework.serializers import ModelSerializer
-from .models import Movie, Actor, Director
+from .models import Account, Movie, Actor, Director
 
 
 class MovieSerializer(ModelSerializer):
@@ -17,4 +19,16 @@ class ActorSerializer(ModelSerializer):
 class DirectorSerializer(ModelSerializer):
     class Meta:
         model = Director
+        fields = "__all__"
+
+
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = "__all__"
+
+
+class AccountSerializer(ModelSerializer):
+    class Meta:
+        model = Account
         fields = "__all__"

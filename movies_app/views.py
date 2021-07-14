@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .models import Movie, Actor, Director
-from .serializers import MovieSerializer, ActorSerializer, DirectorSerializer
+from .models import Movie, Actor, Director, Account
+from .serializers import MovieSerializer, ActorSerializer, DirectorSerializer, UserSerializer, AccountSerializer
 from django.contrib.auth import login, logout
 from .backends import AuthBackend
 from django.contrib.auth.models import User
@@ -37,7 +37,29 @@ def user_register(request):
     email, password = request.data.values()
     user = User.objects.create_user(
         username=email, email=email, password=password)
+    Account.objects.create(user=user)
     return Response("Registered.", status=200)
+
+
+@api_view(["GET"])
+def admin_panel(request):
+    user = AuthBackend.authenticate(email=request.data['email'])
+    permissions = AccountSerializer(Account.objects.get(user=user))
+    if permissions.data['is_admin']:
+        serializer = UserSerializer(User.objects.all(), many=True)
+        return Response(serializer.data, status=200)
+    return Response("Access denied. You don't have permissions", status=403)
+
+
+@api_view(["DELETE", "PUT"])
+def manage_users(request, pk):
+    if request.method == "PUT":
+        user = User.objects.get(id=pk)
+        user.email = request.data['email']
+        return Response("Changed.", status=200)
+    if request.method == "DELETE":
+        User.objects.filter(id=pk).delete()
+        return Response("Deleted.", status=200)
 
 
 ##### MOVIES #####
