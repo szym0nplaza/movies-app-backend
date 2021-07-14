@@ -2,6 +2,27 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Movie, Actor, Director
 from .serializers import MovieSerializer, ActorSerializer, DirectorSerializer
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+
+
+##### LOGIN AND REGISTRATION #####
+@api_view(["POST"])
+def user_login(request):
+    email, password = request.data.values()
+    user = authenticate(username=email, password=password)
+    if user is not None:
+        login(request, user)
+        return Response("Logged.", status=200)
+    return Response("Invalid data.", status=500)
+
+
+@api_view(["POST"])
+def user_register(request):
+    email, password = request.data.values()
+    user = User.objects.create_user(
+        username=email, email=email, password=password)
+    return Response("Registered.", status=200)
 
 
 ##### MOVIES #####
