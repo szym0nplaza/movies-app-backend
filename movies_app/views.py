@@ -2,9 +2,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from .models import Movie, Actor, Director
 from .serializers import MovieSerializer, ActorSerializer, DirectorSerializer
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import login, logout
+from .backends import AuthBackend
 from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny
+from rest_framework.authtoken.models import Token
 
 
 ##### LOGIN AND REGISTRATION #####
@@ -12,11 +14,22 @@ from rest_framework.permissions import AllowAny
 @permission_classes([AllowAny])
 def user_login(request):
     email, password = request.data.values()
-    user = authenticate(username=email, password=password)
+    user = AuthBackend.authenticate(email=email, password=password)
     if user is not None:
         login(request, user)
-        return Response("Logged.", status=200)
+        token = Token.objects.get_or_create(user=user)
+        return Response(f"Token {token[0]}", status=200)
     return Response("Invalid data.", status=500)
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def user_logout(request):
+    email, password = request.data.values()
+    user = AuthBackend.authenticate(email=email)
+    user.auth_token.delete()
+    logout(request)
+    return Response("Logget out.", status=200)
 
 
 @api_view(["POST"])

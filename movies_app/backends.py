@@ -3,9 +3,9 @@ from django.contrib.auth.backends import ModelBackend
 
 
 class AuthBackend(ModelBackend):
-    def authenticate(self, username=None, password=None):
+    def authenticate(email=None, password=None):
         try:
-            user = User.objects.get(email=username)
+            user = User.objects.get(email=email)
             if user:
                 return user
         except User.DoesNotExist:
