@@ -21,9 +21,9 @@ def add_movies(request):
 
 
 @api_view(["PUT", "DELETE"])
-def manage_movies(request):
+def manage_movies(request, pk):
     if request.method == "PUT":
-        movie = Movie.objects.get(id=request.data['id'])
+        movie = Movie.objects.get(id=pk)
         movie.title = request.data['title']
         movie.year_of_production = request.data['year_of_production']
         movie.image = request.data['image']
@@ -32,7 +32,7 @@ def manage_movies(request):
         return Response("Changed.", status=200)
 
     if request.method == "DELETE":
-        Movie.objects.filter(id=request.data['id']).delete()
+        Movie.objects.filter(id=pk).delete()
         return Response("Deleted.", status=200)
 
     return Response("Forbidden request method.")
@@ -55,9 +55,9 @@ def add_actors(request):
 
 
 @api_view(["PUT", "DELETE"])
-def manage_actors(request):
+def manage_actors(request, pk):
     if request.method == "PUT":
-        actor = Actor.objects.get(id=request.data['id'])
+        actor = Actor.objects.get(id=pk)
         actor.name = request.data['name']
         actor.date_of_birth = request.data['date_of_birth']
         actor.photo = request.data['photo']
@@ -65,15 +65,15 @@ def manage_actors(request):
         return Response("Changed", status=200)
 
     if request.method == "DELETE":
-        Actor.objects.filter(id=request.data['id']).delete()
+        Actor.objects.filter(id=pk).delete()
         return Response("Deleted.", status=200)
 
     return Response("Forbidden request method.", status=500)
 
 
 @api_view(["POST"])
-def actor_details(request):
-    actor = Actor.objects.get(id=request.data['id'])
+def actor_details(request, pk):
+    actor = Actor.objects.get(id=pk)
     movies = [str(x) for x in Movie.objects.filter(actors=actor)]
     return Response({
         "actor_info": ActorSerializer(actor).data,
@@ -98,9 +98,9 @@ def add_director(request):
 
 
 @api_view(["PUT", "DELETE"])
-def manage_directors(request):
+def manage_directors(request, pk):
     if request.method == "PUT":
-        director = Director.objects.get(id=request.data['id'])
+        director = Director.objects.get(id=pk)
         director.name = request.data['name']
         director.date_of_birth = request.data['date_of_birth']
         director.photo = request.data['photo']
@@ -108,15 +108,15 @@ def manage_directors(request):
         return Response("Changed", status=200)
 
     if request.method == "DELETE":
-        Director.objects.filter(id=request.data['id']).delete()
+        Director.objects.filter(id=pk).delete()
         return Response("Deleted.", status=200)
 
     return Response("Forbidden request method.", status=500)
 
 
 @api_view(["POST"])
-def director_details(request):
-    director = Director.objects.get(id=request.data['id'])
+def director_details(request, pk):
+    director = Director.objects.get(id=pk)
     movies = [str(x) for x in Movie.objects.filter(director=director)]
     return Response({
         "director_info": DirectorSerializer(director).data,
