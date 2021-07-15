@@ -57,9 +57,11 @@ def manage_users(request, pk):
         user = User.objects.get(id=pk)
         user.email = request.data['email']
         return Response("Changed.", status=200)
+
     if request.method == "DELETE":
-        User.objects.filter(id=pk).delete()
-        return Response("Deleted.", status=200)
+        user = User.objects.get(id=pk)
+        user.delete()
+        return Response(f"Deleted user with email {user}", status=200)
 
 
 ##### MOVIES #####
@@ -75,6 +77,7 @@ def add_movies(request):
     if serializer.is_valid():
         serializer.save()
         return Response("Passed.", status=200)
+
     return Response("Invalid data.", status=500)
 
 
@@ -90,7 +93,7 @@ def manage_movies(request, pk):
         return Response("Changed.", status=200)
 
     if request.method == "DELETE":
-        Movie.objects.filter(id=pk).delete()
+        Movie.objects.get(id=pk).delete()
         return Response("Deleted.", status=200)
 
     return Response("Forbidden request method.")
@@ -123,7 +126,7 @@ def manage_actors(request, pk):
         return Response("Changed", status=200)
 
     if request.method == "DELETE":
-        Actor.objects.filter(id=pk).delete()
+        Actor.objects.get(id=pk).delete()
         return Response("Deleted.", status=200)
 
     return Response("Forbidden request method.", status=500)
@@ -152,6 +155,7 @@ def add_director(request):
     if serializer.is_valid():
         serializer.save()
         return Response("Passed.", status=200)
+
     return Response("Invalid data.", status=500)
 
 
@@ -166,7 +170,7 @@ def manage_directors(request, pk):
         return Response("Changed", status=200)
 
     if request.method == "DELETE":
-        Director.objects.filter(id=pk).delete()
+        Director.objects.get(id=pk).delete()
         return Response("Deleted.", status=200)
 
     return Response("Forbidden request method.", status=500)
