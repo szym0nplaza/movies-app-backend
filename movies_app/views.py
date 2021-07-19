@@ -101,7 +101,15 @@ def manage_movies(request, pk):
     return Response("Forbidden request method.")
 
 
+@api_view(["GET"])
+def movie_details(request, pk):
+    return Response({
+        "movie_info": MovieSerializer(Movie.objects.get(id=pk)).data,
+    }, status=200)
+
 ##### ACTORS #####
+
+
 @api_view(["GET"])
 def get_actors(request):
     actor_serializer = ActorSerializer(Actor.objects.all(), many=True)

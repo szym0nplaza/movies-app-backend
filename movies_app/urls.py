@@ -11,6 +11,8 @@ urlpatterns = [
     path('add-movie/', views.add_movies, name="Add movie"),  # admin
     path('manage-movie/<int:pk>/', views.manage_movies,
          name="Manage movies"),  # admin
+    path('movie-details/<int:pk>/', views.movie_details,
+         name="Movie details"),  # admin
     path('actors/', views.get_actors, name="Get actors"),
     path('add-actor/', views.add_actors, name="Add actor"),  # admin
     path('manage-actor/<int:pk>/', views.manage_actors,
