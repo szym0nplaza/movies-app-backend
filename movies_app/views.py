@@ -1,4 +1,4 @@
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.response import Response
 from .models import Movie, Actor, Director, Account
 from .serializers import MovieSerializer, ActorSerializer, DirectorSerializer, UserSerializer, AccountSerializer
@@ -7,9 +7,11 @@ from .backends import AuthBackend
 from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.models import Token
-
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 
 ##### LOGIN AND REGISTRATION #####
+
+
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def user_login(request):
@@ -72,12 +74,12 @@ def get_movies(request):
 
 
 @api_view(["POST"])
+@parser_classes([MultiPartParser, FormParser])
 def add_movies(request):
     serializer = MovieSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response("Passed.", status=200)
-
     return Response("Invalid data.", status=500)
 
 
@@ -107,6 +109,7 @@ def get_actors(request):
 
 
 @api_view(["POST"])
+@parser_classes([MultiPartParser, FormParser])
 def add_actors(request):
     serializer = ActorSerializer(data=request.data)
     if serializer.is_valid():
@@ -150,6 +153,7 @@ def get_directors(request):
 
 
 @api_view(["POST"])
+@parser_classes([MultiPartParser, FormParser])
 def add_director(request):
     serializer = DirectorSerializer(data=request.data)
     if serializer.is_valid():

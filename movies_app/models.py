@@ -5,7 +5,8 @@ from django.contrib.auth.models import User
 class Actor(models.Model):
     name = models.CharField(max_length=30)
     date_of_birth = models.DateField(default="2010-01-01")
-    photo = models.URLField(max_length=300)
+    image = models.ImageField(
+        upload_to="actors/", default="directors/default.jpg")
 
     def __str__(self):
         return self.name
@@ -14,7 +15,8 @@ class Actor(models.Model):
 class Director(models.Model):
     name = models.CharField(max_length=30)
     date_of_birth = models.DateField(default="2010-01-01")
-    photo = models.URLField(max_length=300)
+    image = models.ImageField(upload_to="directors/",
+                              default="directors/default.jpg")
 
     def __str__(self):
         return self.name
@@ -23,7 +25,8 @@ class Director(models.Model):
 class Movie(models.Model):
     title = models.CharField(max_length=30)
     year_of_production = models.DateField(default="2010-01-01")
-    image = models.URLField(max_length=300)
+    image = models.ImageField(
+        upload_to="movies/", default="directors/default.jpg")
     description = models.TextField()
     actors = models.ManyToManyField(Actor, blank=True, null=True)
     director = models.ForeignKey(
