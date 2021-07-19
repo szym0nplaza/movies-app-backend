@@ -103,9 +103,7 @@ def manage_movies(request, pk):
 
 @api_view(["GET"])
 def movie_details(request, pk):
-    return Response({
-        "movie_info": MovieSerializer(Movie.objects.get(id=pk)).data,
-    }, status=200)
+    return Response(MovieSerializer(Movie.objects.get(id=pk)).data, status=200)
 
 ##### ACTORS #####
 
