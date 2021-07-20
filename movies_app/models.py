@@ -30,7 +30,7 @@ class Movie(models.Model):
     description = models.TextField()
     actors = models.ManyToManyField(Actor, blank=True, null=True)
     director = models.ForeignKey(
-        Director, on_delete=models.CASCADE, default=None, null=True, blank=True)
+        Director, related_name="director", on_delete=models.CASCADE, default=None, null=True, blank=True)
 
     def __str__(self):
         return self.title

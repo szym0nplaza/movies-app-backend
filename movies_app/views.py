@@ -76,9 +76,18 @@ def get_movies(request):
 @api_view(["POST"])
 @parser_classes([MultiPartParser, FormParser])
 def add_movies(request):
-    serializer = MovieSerializer(data=request.data)
+    if len(Movie.objects.filter(title=request.data['title'])) != 0:
+        return Response("Movie exists.", status=400)
+    rd = request.data
+    director = Director.objects.get(name=rd['director'])
+    data = {"title": rd['title'], "year_of_production": rd['year_of_production'],
+            "image": rd['image'], "description": rd['description']}
+    serializer = MovieSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
+        movie = Movie.objects.get(title=rd['title'])
+        movie.director = director
+        movie.save()
         return Response("Passed.", status=200)
     return Response("Invalid data.", status=500)
 

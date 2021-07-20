@@ -1,13 +1,16 @@
 from django.contrib.auth.models import User
-from django.db.models import fields
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from .models import Account, Movie, Actor, Director
 
 
 class MovieSerializer(ModelSerializer):
+    director = serializers.CharField(source="director.name", read_only=True)
+
     class Meta:
         model = Movie
-        fields = "__all__"
+        fields = ('id', 'title', 'year_of_production',
+                  'image', 'description', 'actors', 'director')
 
 
 class ActorSerializer(ModelSerializer):
