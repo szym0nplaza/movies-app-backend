@@ -1,3 +1,4 @@
+
 from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.response import Response
 from .models import Movie, Actor, Director, Account
@@ -7,7 +8,7 @@ from .backends import AuthBackend
 from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.models import Token
-from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser
 
 ##### LOGIN AND REGISTRATION #####
 
@@ -83,10 +84,14 @@ def add_movies(request):
     data = {"title": rd['title'], "year_of_production": rd['year_of_production'],
             "image": rd['image'], "description": rd['description']}
     serializer = MovieSerializer(data=data)
+    print(serializer)
     if serializer.is_valid():
         serializer.save()
         movie = Movie.objects.get(title=rd['title'])
         movie.director = director
+        for actor in rd['actors']:
+            actor_object = Actor.objects.get(name=actor)
+            movie.actors.add(actor_object)
         movie.save()
         return Response("Passed.", status=200)
     return Response("Invalid data.", status=500)
@@ -195,7 +200,7 @@ def manage_directors(request, pk):
     return Response("Forbidden request method.", status=500)
 
 
-@api_view(["POST"])
+@api_view(["GET"])
 def director_details(request, pk):
     director = Director.objects.get(id=pk)
     movies = [str(x) for x in Movie.objects.filter(director=director)]

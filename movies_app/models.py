@@ -28,7 +28,8 @@ class Movie(models.Model):
     image = models.ImageField(
         upload_to="movies/", default="directors/default.jpg")
     description = models.TextField()
-    actors = models.ManyToManyField(Actor, blank=True, null=True)
+    actors = models.ManyToManyField(
+        Actor, related_name="actors", blank=True, null=True)
     director = models.ForeignKey(
         Director, related_name="director", on_delete=models.CASCADE, default=None, null=True, blank=True)
 

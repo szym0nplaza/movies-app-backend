@@ -6,11 +6,12 @@ from .models import Account, Movie, Actor, Director
 
 class MovieSerializer(ModelSerializer):
     director = serializers.CharField(source="director.name", read_only=True)
+    actors = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Movie
-        fields = ('id', 'title', 'year_of_production',
-                  'image', 'description', 'actors', 'director')
+        fields = ['id', 'title', 'year_of_production',
+                  'image', 'description', 'actors', 'director']
 
 
 class ActorSerializer(ModelSerializer):
