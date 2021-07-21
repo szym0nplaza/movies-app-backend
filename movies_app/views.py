@@ -1,8 +1,7 @@
-
 from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.response import Response
 from .models import Movie, Actor, Director, Account
-from .serializers import MovieSerializer, ActorSerializer, DirectorSerializer, UserSerializer, AccountSerializer
+from .serializers import MovieSerializer, ActorSerializer, DirectorSerializer, AccountSerializer
 from django.contrib.auth import login, logout
 from .backends import AuthBackend
 from django.contrib.auth.models import User
@@ -10,18 +9,21 @@ from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.models import Token
 from rest_framework.parsers import MultiPartParser, FormParser
 
+
 ##### LOGIN AND REGISTRATION #####
-
-
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def user_login(request):
     email, password = request.data.values()
     user = AuthBackend.authenticate(email=email, password=password)
+    is_admin = AccountSerializer(Account.objects.get(user=user))
     if user is not None:
         login(request, user)
-        token = Token.objects.get_or_create(user=user)
-        return Response(f"Token {token[0]}", status=200)
+        token = str(Token.objects.get_or_create(user=user)[0])
+        return Response({
+            "is_admin": is_admin.data['is_admin'],
+            "token": token
+        }, status=200)
     return Response("Invalid data.", status=500)
 
 
@@ -155,7 +157,7 @@ def manage_actors(request, pk):
     return Response("Forbidden request method.", status=500)
 
 
-@api_view(["POST"])
+@api_view(["GET"])
 def actor_details(request, pk):
     actor = Actor.objects.get(id=pk)
     movies = [str(x) for x in Movie.objects.filter(actors=actor)]
