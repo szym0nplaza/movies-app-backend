@@ -33,6 +33,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
 
+CORS_ALLOW_HEADERS = ['authorization', 'content-type']
+
 SECURE_CONTENT_TYPE_NOSNIFF = False
 
 # Application definition
