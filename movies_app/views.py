@@ -1,8 +1,7 @@
-import re
 from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.response import Response
 from .models import Movie, Actor, Director, Account
-from .serializers import MovieSerializer, ActorSerializer, DirectorSerializer, AccountSerializer
+from .serializers import MovieSerializer, ActorSerializer, DirectorSerializer, AccountSerializer, UserSerializer
 from django.contrib.auth import login, logout
 from .backends import AuthBackend
 from django.contrib.auth.models import User
@@ -19,9 +18,12 @@ def user_login(request):
     user = AuthBackend.authenticate(email=email, password=password)
     if user is not None:
         is_admin = AccountSerializer(Account.objects.get(user=user))
+        user_id = UserSerializer(User.objects.get(username=email))
         login(request, user)
         token = str(Token.objects.get_or_create(user=user)[0])
         return Response({
+            "id": user_id.data['id'],
+            "email": email,
             "is_admin": is_admin.data['is_admin'],
             "token": token
         }, status=200)
@@ -64,15 +66,20 @@ def admin_panel(request):
 
 @api_view(["DELETE", "PUT"])
 def manage_users(request, pk):
-    if request.method == "PUT":
-        user = User.objects.get(id=pk)
-        user.email = request.data['email']
-        return Response("Changed.", status=200)
+    try:
+        if request.method == "PUT":
+            user = User.objects.get(id=pk)
+            user.email = request.data['email']
+            user.set_password(request.data['password'])
+            user.save()
+            return Response("Changed.", status=200)
 
-    if request.method == "DELETE":
-        user = User.objects.get(id=pk)
-        user.delete()
-        return Response(f"Deleted user with email {user}", status=200)
+        if request.method == "DELETE":
+            user = User.objects.get(id=pk)
+            user.delete()
+            return Response(f"Deleted user with email {user}", status=200)
+    except:
+        return Response("Invalid data.", status=400)
 
 
 ##### MOVIES #####

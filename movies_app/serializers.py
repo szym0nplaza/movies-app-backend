@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from rest_framework import fields, serializers
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from .models import Account, Movie, Actor, Director
 
@@ -30,3 +30,9 @@ class AccountSerializer(ModelSerializer):
     class Meta:
         model = Account
         fields = ['is_admin']
+
+
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id']
