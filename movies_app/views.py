@@ -16,8 +16,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 def user_login(request):
     email, password = request.data.values()
     user = AuthBackend.authenticate(email=email, password=password)
-    is_admin = AccountSerializer(Account.objects.get(user=user))
     if user is not None:
+        is_admin = AccountSerializer(Account.objects.get(user=user))
         login(request, user)
         token = str(Token.objects.get_or_create(user=user)[0])
         return Response({
