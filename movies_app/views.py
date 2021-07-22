@@ -1,3 +1,4 @@
+import re
 from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.response import Response
 from .models import Movie, Actor, Director, Account
@@ -24,7 +25,7 @@ def user_login(request):
             "is_admin": is_admin.data['is_admin'],
             "token": token
         }, status=200)
-    return Response("Invalid data.", status=500)
+    return Response("Invalid data.", status=400)
 
 
 @api_view(["POST"])
@@ -39,11 +40,16 @@ def user_logout(request):
 
 @api_view(["POST"])
 def user_register(request):
-    email, password = request.data.values()
-    user = User.objects.create_user(
-        username=email, email=email, password=password)
-    Account.objects.create(user=user)
-    return Response("Registered.", status=200)
+    email, password, password2 = request.data.values()
+    if password != password2:
+        return Response("Passwords does not match.", status=400)
+    try:
+        user = User.objects.create_user(
+            username=email, email=email, password=password)
+        Account.objects.create(user=user)
+        return Response("Registered.", status=200)
+    except:
+        return Response("Invalid data.", status=400)
 
 
 @api_view(["GET"])
