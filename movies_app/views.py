@@ -129,7 +129,7 @@ def add_movies(request):
         serializer.save()
         movie = Movie.objects.get(title=rd['title'])
         movie.director = director
-        for actor in rd['actors']:
+        for actor in rd['actors'].split(','):
             actor_object = Actor.objects.get(name=actor)
             movie.actors.add(actor_object)
         movie.save()
