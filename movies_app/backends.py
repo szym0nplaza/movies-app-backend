@@ -6,7 +6,7 @@ class AuthBackend(ModelBackend):
     def authenticate(email=None, password=None):
         try:
             user = User.objects.get(email=email)
-            if user:
+            if user.check_password(password):
                 return user
         except User.DoesNotExist:
             return None
