@@ -8,6 +8,8 @@ urlpatterns = [
     path('logout/', views.user_logout, name="Logout"),
     path('register/', views.user_register, name="Register"),
     path('movies/', views.get_movies, name="Get movies"),
+    path('get-users/', views.get_users, name="Get users"),
+    path('user-details/<int:pk>/', views.user_details, name="User details"),
     path('add-movie/', views.add_movies, name="Add movie"),  # admin
     path('manage-movie/<int:pk>/', views.manage_movies,
          name="Manage movies"),  # admin
