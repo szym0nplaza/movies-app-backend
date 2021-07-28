@@ -117,33 +117,44 @@ def get_movies(request):
 @ api_view(["POST"])
 @ parser_classes([MultiPartParser, FormParser])
 def add_movies(request):
-    if len(Movie.objects.filter(title=request.data['title'])) != 0:
-        return Response("Movie exists.", status=400)
-    rd = request.data
-    director = Director.objects.get(name=rd['director'])
-    data = {"title": rd['title'], "year_of_production": rd['year_of_production'],
-            "image": rd['image'], "description": rd['description']}
-    serializer = MovieSerializer(data=data)
-    print(serializer)
-    if serializer.is_valid():
-        serializer.save()
-        movie = Movie.objects.get(title=rd['title'])
-        movie.director = director
-        for actor in rd['actors'].split(','):
-            actor_object = Actor.objects.get(name=actor)
-            movie.actors.add(actor_object)
-        movie.save()
-        return Response("Passed.", status=200)
-    return Response("Invalid data.", status=500)
+    try:
+        if len(Movie.objects.filter(title=request.data['title'])) != 0:
+            return Response("Movie exists.", status=400)
+        rd = request.data
+        director = Director.objects.get(name=rd['director'])
+        data = {"title": rd['title'], "year_of_production": rd['year_of_production'],
+                "image": rd['image'], "description": rd['description']}
+        serializer = MovieSerializer(data=data)
+        print(serializer)
+        if serializer.is_valid():
+            serializer.save()
+            movie = Movie.objects.get(title=rd['title'])
+            movie.director = director
+            if request.data['actors'] != '':
+                for actor in rd['actors'].split(','):
+                    actor_object = Actor.objects.get(name=actor)
+                    movie.actors.add(actor_object)
+            movie.save()
+            return Response("Passed.", status=200)
+    except:
+        return Response("Invalid data.", status=500)
 
 
 @ api_view(["PUT", "DELETE"])
+@ parser_classes([MultiPartParser, FormParser])
 def manage_movies(request, pk):
     if request.method == "PUT":
         movie = Movie.objects.get(id=pk)
+        if request.data['actors'] != '':
+            for actor in movie.actors.all():
+                movie.actors.remove(actor)
+            for actor in request.data['actors'].split(','):
+                actor_object = Actor.objects.get(name=actor)
+                movie.actors.add(actor_object)
+        director = Director.objects.get(name=request.data['director'])
+        movie.director = director
         movie.title = request.data['title']
         movie.year_of_production = request.data['year_of_production']
-        movie.image = request.data['image']
         movie.description = request.data['description']
         movie.save()
         return Response("Changed.", status=200)
@@ -184,7 +195,6 @@ def manage_actors(request, pk):
         actor = Actor.objects.get(id=pk)
         actor.name = request.data['name']
         actor.date_of_birth = request.data['date_of_birth']
-        actor.photo = request.data['photo']
         actor.save()
         return Response("Changed", status=200)
 
