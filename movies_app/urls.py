@@ -26,4 +26,6 @@ urlpatterns = [
          views.manage_directors, name="Manage directors"),  # admin
     path('director-details/<int:pk>/',
          views.director_details, name="Director details"),
+    path('get-director-id/<str:name>/',
+         views.get_director_id, name="Director id"),
 ]

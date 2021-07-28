@@ -8,9 +8,11 @@ from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.models import Token
 from rest_framework.parsers import MultiPartParser, FormParser
-
+from django.core.mail import send_mail
 
 ##### LOGIN AND REGISTRATION #####
+
+
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def user_login(request):
@@ -168,7 +170,17 @@ def manage_movies(request, pk):
 
 @ api_view(["GET"])
 def movie_details(request, pk):
-    return Response(MovieSerializer(Movie.objects.get(id=pk)).data, status=200)
+    actors_table = []
+    movie = MovieSerializer(Movie.objects.get(id=pk)).data
+    actors = Movie.objects.get(id=pk).actors.all()
+    for actor in actors:
+        actor_object = ActorSerializer(Actor.objects.get(name=actor)).data
+        actors_table.append(
+            {"id": actor_object['id'], "name": actor_object['name']})
+    return Response({
+        "movie": movie,
+        "actors": actors_table
+    }, status=200)
 
 ##### ACTORS #####
 
@@ -182,6 +194,8 @@ def get_actors(request):
 @ api_view(["POST"])
 @ parser_classes([MultiPartParser, FormParser])
 def add_actors(request):
+    if len(Actor.objects.filter(name=request.data['name'])) != 0:
+        return Response("Actor exists.", status=400)
     serializer = ActorSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -207,11 +221,17 @@ def manage_actors(request, pk):
 
 @ api_view(["GET"])
 def actor_details(request, pk):
+    movies_table = []
     actor = Actor.objects.get(id=pk)
-    movies = [str(x) for x in Movie.objects.filter(actors=actor)]
+    movies = Movie.objects.filter(actors=actor)
+    for movie in movies:
+        movie_object = MovieSerializer(Movie.objects.get(title=movie)).data
+        movies_table.append(
+            {"id": movie_object['id'], "title": movie_object['title']})
+
     return Response({
         "actor_info": ActorSerializer(actor).data,
-        "movies": movies
+        "movies": movies_table
     }, status=200)
 
 
@@ -225,6 +245,8 @@ def get_directors(request):
 @ api_view(["POST"])
 @ parser_classes([MultiPartParser, FormParser])
 def add_director(request):
+    if len(Director.objects.filter(name=request.data['name'])) != 0:
+        return Response("Director exists.", status=400)
     serializer = DirectorSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -239,7 +261,6 @@ def manage_directors(request, pk):
         director = Director.objects.get(id=pk)
         director.name = request.data['name']
         director.date_of_birth = request.data['date_of_birth']
-        director.photo = request.data['photo']
         director.save()
         return Response("Changed", status=200)
 
@@ -252,9 +273,20 @@ def manage_directors(request, pk):
 
 @ api_view(["GET"])
 def director_details(request, pk):
+    movies_table = []
     director = Director.objects.get(id=pk)
-    movies = [str(x) for x in Movie.objects.filter(director=director)]
+    movies = Movie.objects.filter(director=director)
+    for movie in movies:
+        movie_object = MovieSerializer(Movie.objects.get(title=movie)).data
+        movies_table.append(
+            {"id": movie_object['id'], "title": movie_object['title']})
     return Response({
         "director_info": DirectorSerializer(director).data,
-        "movies": movies
+        "movies": movies_table
     }, status=200)
+
+
+@ api_view(["GET"])
+def get_director_id(request, name):
+    director = DirectorSerializer(Director.objects.get(name=name))
+    return Response(director.data, status=200)
