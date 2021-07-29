@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.response import Response
-from .models import Movie, Actor, Director, Account
-from .serializers import MovieSerializer, ActorSerializer, DirectorSerializer, AccountSerializer, UserSerializer
+from .models import Movie, Actor, Director, Account, Star
+from .serializers import MovieSerializer, ActorSerializer, DirectorSerializer, AccountSerializer, StarSerializer, UserSerializer
 from django.contrib.auth import login, logout
 from .backends import AuthBackend
 from django.contrib.auth.models import User
@@ -290,3 +290,29 @@ def director_details(request, pk):
 def get_director_id(request, name):
     director = DirectorSerializer(Director.objects.get(name=name))
     return Response(director.data, status=200)
+
+
+@api_view(["POST"])
+def rate_movie(request):
+    rd = request.data
+    movie = Movie.objects.get(title=rd['title'])
+    user = User.objects.get(email=rd['email'])
+    stars = Star.objects.create(amount=rd['amount'])
+    stars.movie.add(movie)
+    stars.user = user
+    stars.save()
+    return Response("Added.", status=200)
+
+
+@api_view(["GET"])
+def get_ratings(request, title):
+    avg_rate = []
+    ratings = StarSerializer(
+        Star.objects.filter(movie__title=title), many=True).data
+    for item in ratings:
+        for rate in dict(item).values():
+            avg_rate.append(rate)
+    print(avg_rate)
+    if len(avg_rate) != 0:
+        return Response((sum(avg_rate)/len(avg_rate)), status=200)
+    return Response(0, status=200)

@@ -28,4 +28,8 @@ urlpatterns = [
          views.director_details, name="Director details"),
     path('get-director-id/<str:name>/',
          views.get_director_id, name="Director id"),
+    path('rate-movie/',
+         views.rate_movie, name="Rate movie"),
+    path('get-ratings/<str:title>/',
+         views.get_ratings, name="Get ratings"),
 ]
