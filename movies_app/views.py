@@ -5,7 +5,7 @@ from .serializers import MovieSerializer, ActorSerializer, DirectorSerializer, A
 from django.contrib.auth import login, logout
 from .backends import AuthBackend
 from django.contrib.auth.models import User
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.core.mail import send_mail
@@ -33,7 +33,7 @@ def user_login(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def user_logout(request):
     email = request.data['email']
     user = User.objects.get(email=email)
@@ -43,6 +43,7 @@ def user_logout(request):
 
 
 @api_view(["POST"])
+@permission_classes([AllowAny])
 def user_register(request):
     email, password, password2 = request.data.values()
     if password != password2:
@@ -57,6 +58,7 @@ def user_register(request):
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def admin_panel(request):
     user = AuthBackend.authenticate(email=request.data['email'])
     permissions = AccountSerializer(Account.objects.get(user=user))
@@ -67,6 +69,7 @@ def admin_panel(request):
 
 
 @api_view(["DELETE", "PUT"])
+@permission_classes([IsAuthenticated])
 def manage_users(request, pk):
     try:
         if request.method == "PUT":
@@ -85,12 +88,14 @@ def manage_users(request, pk):
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def get_users(request):
     users = UserSerializer(User.objects.all(), many=True)
     return Response(users.data, status=200)
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def user_details(request, pk):
     user = User.objects.get(id=pk)
     serializer = UserSerializer(user)
@@ -111,6 +116,7 @@ def user_details(request, pk):
 
 
 @ api_view(["GET"])
+@permission_classes([AllowAny])
 def get_movies(request):
     movie_serializer = MovieSerializer(Movie.objects.all(), many=True)
     return Response(movie_serializer.data, status=200)
@@ -118,6 +124,7 @@ def get_movies(request):
 
 @ api_view(["POST"])
 @ parser_classes([MultiPartParser, FormParser])
+@permission_classes([IsAuthenticated])
 def add_movies(request):
     try:
         if len(Movie.objects.filter(title=request.data['title'])) != 0:
@@ -144,6 +151,7 @@ def add_movies(request):
 
 @ api_view(["PUT", "DELETE"])
 @ parser_classes([MultiPartParser, FormParser])
+@permission_classes([IsAuthenticated])
 def manage_movies(request, pk):
     if request.method == "PUT":
         movie = Movie.objects.get(id=pk)
@@ -169,6 +177,7 @@ def manage_movies(request, pk):
 
 
 @ api_view(["GET"])
+@permission_classes([AllowAny])
 def movie_details(request, pk):
     actors_table = []
     movie = MovieSerializer(Movie.objects.get(id=pk)).data
@@ -186,6 +195,7 @@ def movie_details(request, pk):
 
 
 @ api_view(["GET"])
+@permission_classes([AllowAny])
 def get_actors(request):
     actor_serializer = ActorSerializer(Actor.objects.all(), many=True)
     return Response(actor_serializer.data, status=200)
@@ -193,6 +203,7 @@ def get_actors(request):
 
 @ api_view(["POST"])
 @ parser_classes([MultiPartParser, FormParser])
+@permission_classes([IsAuthenticated])
 def add_actors(request):
     if len(Actor.objects.filter(name=request.data['name'])) != 0:
         return Response("Actor exists.", status=400)
@@ -204,6 +215,7 @@ def add_actors(request):
 
 
 @ api_view(["PUT", "DELETE"])
+@permission_classes([IsAuthenticated])
 def manage_actors(request, pk):
     if request.method == "PUT":
         actor = Actor.objects.get(id=pk)
@@ -220,6 +232,7 @@ def manage_actors(request, pk):
 
 
 @ api_view(["GET"])
+@permission_classes([AllowAny])
 def actor_details(request, pk):
     movies_table = []
     actor = Actor.objects.get(id=pk)
@@ -237,6 +250,7 @@ def actor_details(request, pk):
 
 ##### DIRECTORS #####
 @ api_view(["GET"])
+@permission_classes([AllowAny])
 def get_directors(request):
     director = DirectorSerializer(Director.objects.all(), many=True)
     return Response(director.data, status=200)
@@ -244,6 +258,7 @@ def get_directors(request):
 
 @ api_view(["POST"])
 @ parser_classes([MultiPartParser, FormParser])
+@permission_classes([IsAuthenticated])
 def add_director(request):
     if len(Director.objects.filter(name=request.data['name'])) != 0:
         return Response("Director exists.", status=400)
@@ -256,6 +271,7 @@ def add_director(request):
 
 
 @ api_view(["PUT", "DELETE"])
+@permission_classes([IsAuthenticated])
 def manage_directors(request, pk):
     if request.method == "PUT":
         director = Director.objects.get(id=pk)
@@ -272,6 +288,7 @@ def manage_directors(request, pk):
 
 
 @ api_view(["GET"])
+@permission_classes([AllowAny])
 def director_details(request, pk):
     movies_table = []
     director = Director.objects.get(id=pk)
@@ -287,12 +304,14 @@ def director_details(request, pk):
 
 
 @ api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def get_director_id(request, name):
     director = DirectorSerializer(Director.objects.get(name=name))
     return Response(director.data, status=200)
 
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def rate_movie(request):
     rd = request.data
     movie = Movie.objects.get(title=rd['title'])
@@ -305,6 +324,7 @@ def rate_movie(request):
 
 
 @api_view(["GET"])
+@permission_classes([AllowAny])
 def get_ratings(request, title):
     avg_rate = []
     ratings = StarSerializer(
