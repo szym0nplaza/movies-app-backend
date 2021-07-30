@@ -1,6 +1,5 @@
 .mypy_cache
 venv
-.env
 db.sqlite3
 __pycache__
 helper.txt
