@@ -304,7 +304,7 @@ def director_details(request, pk):
 
 
 @ api_view(["GET"])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def get_director_id(request, name):
     director = DirectorSerializer(Director.objects.get(name=name))
     return Response(director.data, status=200)
@@ -332,7 +332,6 @@ def get_ratings(request, title):
     for item in ratings:
         for rate in dict(item).values():
             avg_rate.append(rate)
-    print(avg_rate)
     if len(avg_rate) != 0:
         return Response((sum(avg_rate)/len(avg_rate)), status=200)
     return Response(0, status=200)
