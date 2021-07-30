@@ -40,3 +40,10 @@ class Movie(models.Model):
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_admin = models.BooleanField(default=False)
+
+
+class Star(models.Model):
+    amount = models.FloatField()
+    movie = models.ManyToManyField(Movie, related_name="movie")
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, default=None, null=True, blank=True)
