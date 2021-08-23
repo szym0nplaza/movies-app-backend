@@ -29,12 +29,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-"""
-CORS_ALLOWED_ORIGINS = [
+
+"""CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-]
-"""
+]"""
+
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_HEADERS = ['authorization', 'content-type']
 
@@ -95,7 +96,6 @@ WSGI_APPLICATION = 'movies_app_config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

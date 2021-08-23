@@ -32,4 +32,5 @@ urlpatterns = [
          views.rate_movie, name="Rate movie"),
     path('get-ratings/<str:title>/',
          views.get_ratings, name="Get ratings"),
+    path('toggle-movies/', views.toggle_movies, name="Toglle movies")
 ]

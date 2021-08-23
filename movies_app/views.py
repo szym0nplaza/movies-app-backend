@@ -9,7 +9,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.core.mail import send_mail
-
+from .tasks import get_movies_data
 ##### LOGIN AND REGISTRATION #####
 
 
@@ -335,3 +335,10 @@ def get_ratings(request, title):
     if len(avg_rate) != 0:
         return Response((sum(avg_rate)/len(avg_rate)), status=200)
     return Response(0, status=200)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def toggle_movies(request):
+    get_movies_data.delay()
+    return Response(True)

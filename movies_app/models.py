@@ -23,10 +23,10 @@ class Director(models.Model):
 
 
 class Movie(models.Model):
-    title = models.CharField(max_length=30)
+    title = models.CharField(max_length=100)
     year_of_production = models.DateField(default="2010-01-01")
     image = models.ImageField(
-        upload_to="movies/", default="directors/default.jpg")
+        upload_to="movies/", default="movies/video-camera.png")
     description = models.TextField()
     actors = models.ManyToManyField(
         Actor, related_name="actors", blank=True, null=True)
@@ -39,7 +39,7 @@ class Movie(models.Model):
 
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    is_admin = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=True)
 
 
 class Star(models.Model):
